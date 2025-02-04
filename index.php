@@ -1,71 +1,23 @@
 <?php
-// Database Configuration
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "student_portal";
+// Handle Contact Form Submission
+$message_sent = false;
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
+    $name = htmlspecialchars($_POST["name"]);
+    $email = htmlspecialchars($_POST["email"]);
+    $message = htmlspecialchars($_POST["message"]);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Simple Email Configuration (Replace with your email)
+    $to = "your-email@example.com";
+    $subject = "New Contact Form Submission";
+    $body = "Name: $name\nEmail: $email\nMessage:\n$message";
+    $headers = "From: $email";
 
-// Handling form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Add Student
-    if (isset($_POST['add_student'])) {
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $sql = "INSERT INTO students (name, email) VALUES ('$name', '$email')";
-        if ($conn->query($sql) === TRUE) {
-            $message = "New student added successfully!";
-        } else {
-            $message = "Error: " . $conn->error;
-        }
-    }
-    // Add Course
-    if (isset($_POST['add_course'])) {
-        $course_name = $_POST['course_name'];
-        $course_code = $_POST['course_code'];
-        $sql = "INSERT INTO courses (course_name, course_code) VALUES ('$course_name', '$course_code')";
-        if ($conn->query($sql) === TRUE) {
-            $message = "New course added successfully!";
-        } else {
-            $message = "Error: " . $conn->error;
-        }
-    }
-    // Enroll Student
-    if (isset($_POST['enroll_student'])) {
-        $student_id = $_POST['student_id'];
-        $course_id = $_POST['course_id'];
-        $sql = "INSERT INTO enrollments (student_id, course_id) VALUES ('$student_id', '$course_id')";
-        if ($conn->query($sql) === TRUE) {
-            $message = "Student enrolled successfully!";
-        } else {
-            $message = "Error: " . $conn->error;
-        }
-    }
-    // Mark Attendance
-    if (isset($_POST['mark_attendance'])) {
-        $student_id = $_POST['student_id'];
-        $course_id = $_POST['course_id'];
-        $attendance_date = $_POST['attendance_date'];
-        $sql = "INSERT INTO attendance (student_id, course_id, attendance_date) VALUES ('$student_id', '$course_id', '$attendance_date')";
-        if ($conn->query($sql) === TRUE) {
-            $message = "Attendance marked successfully!";
-        } else {
-            $message = "Error: " . $conn->error;
-        }
+    if (mail($to, $subject, $body, $headers)) {
+        $message_sent = true;
     }
 }
 
-// Fetch Students
-$students_result = $conn->query("SELECT * FROM students");
-// Fetch Courses
-$courses_result = $conn->query("SELECT * FROM courses");
 ?>
 
 <!DOCTYPE html>
@@ -73,85 +25,59 @@ $courses_result = $conn->query("SELECT * FROM courses");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal</title>
+    <title>E-Learning Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+            text-align: center;
+            padding: 20px;
+            color: #333;
+        }
+        h1 { color: white; font-size: 2.5em; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .button {
+            background-color: #ff6f61; color: white; padding: 10px 20px;
+            border: none; border-radius: 5px; cursor: pointer;
+            text-decoration: none; font-size: 1.2em;
+        }
+        .button:hover { background-color: #e65b55; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        form { text-align: left; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Student Portal</h1>
 
-    <!-- Display Messages -->
-    <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
+    <h1>Welcome to Our E-Learning Platform</h1>
 
-    <!-- Add Student Form -->
-    <h2>Add New Student</h2>
-    <form method="POST">
-        <label for="name">Student Name:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="email">Student Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-        <input type="submit" name="add_student" value="Add Student">
-    </form>
-    <hr>
+    <div class="container">
+        <h2>Our Popular Courses</h2>
+        <ul>
+            <li><strong>Web Development</strong> - Learn HTML, CSS, JavaScript, and PHP</li>
+            <li><strong>Machine Learning</strong> - Get started with AI and Deep Learning</li>
+            <li><strong>Cybersecurity</strong> - Protect yourself and organizations from cyber threats</li>
+        </ul>
+        <a href="#contact" class="button">Contact Us</a>
+    </div>
 
-    <!-- Add Course Form -->
-    <h2>Add New Course</h2>
-    <form method="POST">
-        <label for="course_name">Course Name:</label><br>
-        <input type="text" id="course_name" name="course_name" required><br><br>
-        <label for="course_code">Course Code:</label><br>
-        <input type="text" id="course_code" name="course_code" required><br><br>
-        <input type="submit" name="add_course" value="Add Course">
-    </form>
-    <hr>
+    <div class="container" id="contact">
+        <h2>Contact Us</h2>
+        <?php if ($message_sent): ?>
+            <p style="color: green;">Message sent successfully! We'll get back to you soon.</p>
+        <?php endif; ?>
+        <form method="post">
+            <label>Name:</label>
+            <input type="text" name="name" required>
+           
+            <label>Email:</label>
+            <input type="email" name="email" required>
+           
+            <label>Message:</label>
+            <textarea name="message" rows="4" required></textarea>
 
-    <!-- Enroll Student Form -->
-    <h2>Enroll Student in Course</h2>
-    <form method="POST">
-        <label for="student_id">Select Student:</label><br>
-        <select name="student_id" required>
-            <?php while ($student = $students_result->fetch_assoc()) { ?>
-                <option value="<?php echo $student['id']; ?>"><?php echo $student['name']; ?></option>
-            <?php } ?>
-        </select><br><br>
-
-        <label for="course_id">Select Course:</label><br>
-        <select name="course_id" required>
-            <?php while ($course = $courses_result->fetch_assoc()) { ?>
-                <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
-            <?php } ?>
-        </select><br><br>
-
-        <input type="submit" name="enroll_student" value="Enroll Student">
-    </form>
-    <hr>
-
-    <!-- Mark Attendance Form -->
-    <h2>Mark Student Attendance</h2>
-    <form method="POST">
-        <label for="student_id">Select Student:</label><br>
-        <select name="student_id" required>
-            <?php while ($student = $students_result->fetch_assoc()) { ?>
-                <option value="<?php echo $student['id']; ?>"><?php echo $student['name']; ?></option>
-            <?php } ?>
-        </select><br><br>
-
-        <label for="course_id">Select Course:</label><br>
-        <select name="course_id" required>
-            <?php while ($course = $courses_result->fetch_assoc()) { ?>
-                <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
-            <?php } ?>
-        </select><br><br>
-
-        <label for="attendance_date">Attendance Date:</label><br>
-        <input type="date" name="attendance_date" required><br><br>
-
-        <input type="submit" name="mark_attendance" value="Mark Attendance">
-    </form>
-    <hr>
+            <input type="submit" name="submit" value="Send Message" class="button">
+        </form>
+    </div>
 
 </body>
 </html>
-
-<?php
-// Close the database connection
-$conn->close();
-?>
