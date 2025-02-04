@@ -1,9 +1,9 @@
 <?php
 // Database Configuration
-$servername = "localhost"; // MySQL server
-$username = "root"; // MySQL username
-$password = ""; // MySQL password
-$dbname = "student_portal"; // Database name
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "student_portal";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -13,7 +13,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handling form submissions for adding student, course, enrollment, and attendance
+// Handling form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Add Student
     if (isset($_POST['add_student'])) {
@@ -77,19 +77,12 @@ $courses_result = $conn->query("SELECT * FROM courses");
 </head>
 <body>
     <h1>Welcome to the Student Portal</h1>
-    <nav>
-        <a href="#add_student_form">Add Student</a> |
-        <a href="#add_course_form">Add Course</a> |
-        <a href="#enroll_student_form">Enroll Student</a> |
-        <a href="#mark_attendance_form">Mark Attendance</a>
-    </nav>
-    <hr>
 
     <!-- Display Messages -->
     <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
 
     <!-- Add Student Form -->
-    <h2 id="add_student_form">Add New Student</h2>
+    <h2>Add New Student</h2>
     <form method="POST">
         <label for="name">Student Name:</label><br>
         <input type="text" id="name" name="name" required><br><br>
@@ -100,7 +93,7 @@ $courses_result = $conn->query("SELECT * FROM courses");
     <hr>
 
     <!-- Add Course Form -->
-    <h2 id="add_course_form">Add New Course</h2>
+    <h2>Add New Course</h2>
     <form method="POST">
         <label for="course_name">Course Name:</label><br>
         <input type="text" id="course_name" name="course_name" required><br><br>
@@ -111,7 +104,7 @@ $courses_result = $conn->query("SELECT * FROM courses");
     <hr>
 
     <!-- Enroll Student Form -->
-    <h2 id="enroll_student_form">Enroll Student in Course</h2>
+    <h2>Enroll Student in Course</h2>
     <form method="POST">
         <label for="student_id">Select Student:</label><br>
         <select name="student_id" required>
@@ -132,7 +125,7 @@ $courses_result = $conn->query("SELECT * FROM courses");
     <hr>
 
     <!-- Mark Attendance Form -->
-    <h2 id="mark_attendance_form">Mark Student Attendance</h2>
+    <h2>Mark Student Attendance</h2>
     <form method="POST">
         <label for="student_id">Select Student:</label><br>
         <select name="student_id" required>
